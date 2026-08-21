@@ -1,0 +1,53 @@
+embedding:
+  provider: openai
+  model: text-embedding-3-small
+
+extraction_model:
+  provider: openai
+  model: gpt-4o-mini
+  temperature: 0.0
+
+memory:
+  extraction_questions: 1
+  collections:
+    explicit: explicit
+    latent: latent
+
+query:
+  n_direct: 5
+  n_trait: 5
+  top_k_explicit: 5
+  top_k_latent: 15
+  retrieval_score_threshold_explicit: 0.27
+  retrieval_score_threshold_latent: 0.45
+
+domain-transfer:
+  life_domains:
+    Health: "Medical wellness and disease management, what you consume."
+    Fitness: "Physical capability, strength, and movement."
+    Mindset: "Mental health, resilience, and emotional intelligence."
+    Spirituality: "Religion, meditation, and connection to a higher power or universe."
+    Identity: "Self-image, core values, and personal philosophy."
+    Personal Style: "Fashion, grooming, and how you present yourself."
+    Romance: "Dating, marriage, and intimate partnerships."
+    Parenting: "Raising children and guiding the next generation."
+    Family: "Relationships with parents, siblings, and extended relatives."
+    Social Life: "Casual socializing, networking, and acquaintances."
+    Pets: "Animal companionship and care."
+    Career: "Your primary profession or day job."
+    Entrepreneurship: "Side hustles, business building, and independent projects."
+    Finances: "Budgeting, paying bills, managing debt, investing, net worth, and long-term financial independence."
+    Education & Learning: "Formal schooling, certifications, or self-study."
+    Community: "Voting, political involvement, donating money, resources, volunteering, and charity."
+    Travel: "Vacations, tourism, and exploring the world."
+    Food & Dining: "Culinary experiences, restaurants, and cooking for pleasure."
+    Entertainment: "Movies, television, gaming, sports games, pop culture, and the arts."
+    Hobbies: "Crafts, collecting, and non-monetized passion projects."
+    Events: "Concerts, festivals, and large social gatherings."
+    Housing: "Your physical home, real estate, and living situation."
+    Nature: "Time spent outdoors, gardening, and environmental connection."
+    Technology: "Devices, screen time, and digital life."
+    Mobility: "Transportation, driving, and how you get around."
+    Productivity: "Productivity, organization, scheduling, and decluttering."
+
+# LLM may occasionally generate additional hooks, but this is usually not the case.

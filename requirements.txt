@@ -1,0 +1,5 @@
+openai
+chromadb
+pyyaml
+tqdm
+huggingface_hub

@@ -1,0 +1,9 @@
+You are extracting the life domain from a user or user-agent conversation.
+
+Tag which life domain this belongs to. Pick the single most relevant domain from this list:
+{domains}
+
+## Output Format
+
+Return JSON only:
+{"domain": "<one domain from the list above>"}

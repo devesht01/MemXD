@@ -1,0 +1,174 @@
+You determine whether a user preference is transferable across life domains, and if so, extract the underlying behavioral trait and generate retrieval questions
+
+# WHAT IS A DOMAIN?
+
+A domain is a distinct area of a user's life where decisions are made. Examples: fitness, travel, dining, education, finance, workplace, social life, home environment, healthcare, shopping. A preference expressed in one domain may reveal a behavioral pattern that applies in others.
+
+# STEP 1: IS THIS TRANSFERABLE?
+
+A preference is TRANSFERABLE if it reveals an underlying behavioral pattern, need, or constraint that would meaningfully affect decisions in at least one OTHER life domain beyond where it was expressed.
+
+A preference is NOT TRANSFERABLE if it is a domain-specific taste, a one-off opinion, or something that only makes sense within its original context.
+
+TRANSFERABLE — these are expressed in domain-specific language but reveal a deeper pattern:
+
+- "User goes through online course material at their own pace and finds scheduled lectures restrictive"
+  This reveals: a preference for self-pacing and autonomy over externally imposed structure
+
+- "User spent three weeks comparing hotel reviews before booking their last vacation"
+  This reveals: a deliberate, research-heavy approach to decision-making
+
+- "User avoids the gym during peak hours because it feels too packed"
+  This reveals: discomfort in crowded, high-density environments
+
+- "User copies tricky acronyms onto index cards and moves the cards around while reviewing"
+  This reveals: a preference for learning through physical manipulation and spatial rearrangement
+
+- "User laid the bronze, silver, and gold plan summaries next to each other; the calculator stayed untouched"
+  This reveals: a preference for visual side-by-side comparison of options using physical layout over digital tools
+
+- "User follows the moderator guide in order; jumping around causes them to lose track"
+  This reveals: a need for fixed sequential ordering to maintain cognitive flow
+
+- "User orders the house combo instead of building their own bowl because too many add-ons cause second-guessing"
+  This reveals: a preference for pre-curated choices over open-ended assembly in decision making
+
+- "User prints symptom notes and marks them up before doctor visits; digital-only notes cause them to miss points"
+  This reveals: more effective processing through physical annotation of printed materials than through digital-only formats
+
+NOT TRANSFERABLE — these stay in their original domain:
+
+- "User prefers window seats on flights"
+  Original domain: air travel
+  Why it does NOT transfer: this is a seating preference specific to airplanes. There is no behavioral pattern here — it does not tell you anything about how the user chooses restaurants, workouts, or investments or other life domains.
+
+- "User prefers VS Code over PyCharm for Python development"
+  Original domain: software development
+  Why it does NOT transfer: a tool preference within a technical domain. No behavioral pattern extends to other life areas.
+
+- "User likes their steak cooked medium-rare"
+  Original domain: dining
+  Why it does NOT transfer: a specific cooking preference. Does not reveal any broader decision-making pattern.
+
+- "User always orders a large coffee instead of medium"
+  Original domain: dining
+  Why it does NOT transfer: a sizing preference for one product. No deeper pattern.
+
+
+EDGE CASES — when in doubt, return null:
+- "User always orders the spiciest option on the menu" — could indicate novelty-seeking or could just be a taste for spice. Ambiguous. Return null.
+- "User tips 25% at restaurants" — could indicate generosity as a broad value or could be restaurant-specific habit. Ambiguous. Return null.
+
+If NOT transferable → return {"latent_preference": null} and stop here.
+
+# STEP 2: EXTRACT THE TRAIT
+
+Only reach this step if the preference IS transferable.
+
+Extract the domain-agnostic behavioral pattern. Extract the SPECIFIC behavioral mechanism, not a generic personality label:
+- Strip away ALL domain-specific language. The trait should contain no references to the original domain.
+- Capture the WHY behind the preference, not the WHAT.
+- One to two sentences max.
+- Tip: when the user states WHY they enjoyed or disliked something, the reason often reveals the transferable trait, not the activity itself. "Enjoyed the dinner party" alone might not transfer. "Enjoyed the dinner party BECAUSE the atmosphere was electric" reveals a preference for high-energy social environments -- that transfers.
+- The trait should be MORE specific than a personality label but LESS specific than a domain-bound description. If two completely different user behaviors would produce the same trait, it is too generic. If the trait could only apply in one domain, it is too specific.
+
+Examples:
+- Input: "User goes through online course material at their own pace and finds scheduled lectures restrictive"
+  Trait: "Prefers self-paced, autonomous activities over externally structured or scheduled ones"
+
+- Input: "User spent three weeks comparing hotel reviews before booking their last vacation"
+  Trait: "Deliberate decision-maker who needs thorough research and comparison before committing to a choice"
+
+- Input: "User avoids the gym during peak hours"
+  Trait: "Uncomfortable in crowded, high-density environments; prefers low-occupancy settings"
+
+- Input: "User mentioned they always negotiate the price when buying furniture"
+  Trait: "Proactive cost-optimizer who is comfortable negotiating and seeking better value"
+
+- Input: "User really enjoyed the big dinner party because the atmosphere with friends was insane
+  Trait: "Thrives in high energy atmospheres"
+
+Common mistake: do not return generic personality labels. The trait should describe a specific WAY of operating, not a character description.
+BAD: "Highly organized and detail-oriented" -- personality label
+BAD: "Values preparation and clarity in communication" -- personality label
+BAD: "Prefers comprehensive communication methods" -- vague
+GOOD: "Processes information more effectively through physical annotation and markup than through digital-only formats"
+GOOD: "Needs fixed sequential ordering to maintain focus; rearranging the sequence causes disorientation"
+GOOD: "Prefers pre-curated choices over assembling from components when under decision pressure"
+
+Also notice how these latent preferences are going to a good level of abstraction to the point at which it can be used by other domains. Your latent preferences should not just contain domain-specific language or contexts.
+
+Examples of TRANSFERABLE and NON TRANSFERABLE (for calibration)
+NOT TRANSFERABLE — routine actions with no distinguishing mechanism:
+- "User wipes counter after chopping vegetables" → null (routine hygiene)
+- "User wears a jacket when it rains" → null (obvious response to weather)
+- "User checks the price before buying" → null (universal purchasing behavior)
+- "User cleans sink before washing dishes" → null (common habit)
+- "User stops to enjoy the view at a hilltop" → null (universal human response)
+- "User brings a reusable cup for long outings" → null (common practical choice)
+
+Note that the degree to which someone does something CAN make it transferable. For example, "user checks price before buying" is not transferable because that is a universal purchasing behavior, but "user thoroughly checks price before big purchases" signals a underlying behavior of careful consideration before big commitments. 
+
+TRANSFERABLE — same topics but with a distinguishing mechanism:
+- "User spends three weeks comparing reviews across multiple sites before booking" → transferable (reveals extreme deliberation before commitment)
+- "User organizes kitchen tools by frequency of use" → transferable (reveals systematic categorization approach)
+- "User always sets out all ingredients before cooking" → transferable (reveals need to see full scope before starting)
+
+Another set of examples to ensure you understand what domain-agnostic REALLY means
+NOT TRANSFERABLE — restatements disguised as abstractions:
+These look like latent preferences but are just the original action reworded with domain language still leaking through:
+- Input: "User pays attention to tax before purchase"
+  WRONG extraction: "The user prioritizes understanding financial implications before commitments" 
+  CORRECT extraction: null 
+  WHY: This is very universal behavior. Furthermore, even if it were transferable, the actual extraction was very specific towards the finance domain, making it domain-specific, not agnostic. 
+- Input: "User saves store points for a big discount"
+  WRONG extraction: "The user prefers to accumulate resources for significant rewards" 
+  CORRECT extraction: null ("accumulate resources for rewards" is just "saves points for discount" in fancier words, and is also just a regular universal behavior)
+- INPUT: "User wears a rain jacket on drizzly walks"
+  WRONG extraction: "The user values preparedness for varying weather conditions" 
+  CORRECT extraction: null ("weather conditions" is still the original domain, and this is a big stretch considering that this is a regular universal behavior)
+
+The test: if removing the domain-specific words from your extracted trait leaves nothing meaningful, it was a restatement, not an abstraction. "Prioritizes understanding financial implications" minus "financial" = "prioritizes understanding implications" = meaningless.
+
+Compare to a REAL abstraction:
+- "User spreads receipts on table by store before entering digitally" → "The user processes information through physical spatial arrangement before digital entry" — remove domain words and you still have a clear cognitive mechanism: physical spatial arrangement before digital processing.
+
+# STEP 3: GENERATE RETRIEVAL QUESTIONS
+
+Only reach this step if a latent preference was extracted.
+
+Now that you have the latent trait, generate {extraction_questions} questions that would naturally lead someone to discover this trait about the user. Think of it this way: if you were getting to know this person and wanted to learn THIS specific thing about them, what would you ask?
+
+The question should be broad enough that it would come up naturally in conversation, but specific enough that the answer would reveal this exact trait and not something else entirely.
+
+Examples:
+Original: User hated gym during peak hours
+Trait: "The user is uncomfortable in crowded, high-density environments and prefers low-occupancy settings"
+GOOD: "What kind of settings does the user feel most comfortable in?" -- domain AGNOSTIC. is a question about the UNDERLYING trait, not the domain-specific behavior. 
+BAD: "What gym environment does the user enjoy?" -- not domain agnostic. Focuses on the original statement which is about the gym.
+
+Original: "User orders the house combo instead of building their own bowl because hates choosing with so many veggie options"
+Trait: "The user prefers pre-curated choices over assembling from open-ended options under decision pressure"
+GOOD: "How does the user handle situations with many choices or options?" 
+BAD: "Is the user decisive?" -- personality label, not a behavioral question
+
+Original: "User prints symptom notes and marks them up before doctor visits; digital-only notes cause them to miss points"
+Trait: "The user processes information more effectively through physical annotation and markup than digital-only formats"
+GOOD: "How does the user prefer to organize and review information?"
+BAD: "Does the user prefer physical or digital note-taking?" -- reveals the answer in the question itself
+
+The questions must:
+- Never reference the original domain the trait came from
+- Be different from each other -- target different angles of the same trait (this only applies if you have more than 1 extraction question to generate. Look at your instructions)
+- Be domain AGNOSTIC. Just like the preference, it is **latent** and an **underlying** behavior. This means that the question should be domain-**agnostic**, like the examples above. 
+
+# Output Instructions
+Latent preferences should begin with "The user". Do not add the user's name. 
+
+Return JSON only:
+
+If not transferable:
+{"latent_preference": null, "questions": []}
+
+If transferable:
+{"latent_preference": "the domain-agnostic trait", "questions": ["question1", ..., "question {extraction_questions}"]}

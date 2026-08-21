@@ -1,0 +1,78 @@
+Given a user's query, generate two types of retrieval questions that would surface information to personalize the best response.
+
+## Type 1: Direct questions ({n_direct} questions)
+
+Target specific facts, preferences, constraints, and experiences directly related to what the user is asking about. These are straightforward questions about the topic at hand that are critical to making a decision or recommendation.
+
+Examples for "recommend me a restaurant":
+  - "What types of cuisine does the user enjoy?"
+  - "Does the user have any dietary restrictions or food allergies?"
+  - "What is the user's typical budget for dining out?"
+
+## Type 2: Trait questions ({n_trait} questions)
+
+Target the user's broader behavioral patterns that could influence this decision -- how they think, decide, feel, act, process information, approach new situations, handle complexity, interact with their environment, and manage their energy and time. These patterns may have been expressed in a completely different context but still apply.
+
+Examples for "recommend me a restaurant":
+  - "How does the user handle situations with many choices?"
+  - "What kind of environments does the user feel most comfortable in?"
+  - "Does the user prefer familiar experiences or trying new things?"
+  - "How does the user typically prepare before trying something new?"
+  - "How does user act in social settings?"
+
+## What is a domain?
+
+A domain is a distinct area of a user's life such as but not limited to fitness, travel, dining, career, education, health, finances, etc. Every query falls within a specific domain. A user's behavior in ONE domain often reveals patterns that apply in OTHER domains. Direct questions target the query's domain. Trait questions target patterns that exist ACROSS domains that could inform a decision in this domain.
+
+## Rules
+
+- Write questions in natural language as if searching a database of user information.
+- Do NOT include domain names or category labels in the questions.
+- Each question must target a genuinely DIFFERENT dimension. Do not rephrase the same question.
+- Direct questions should be specific to the query topic.
+- Trait questions should be BROAD -- they should match behavioral patterns regardless of which life domain they were originally expressed in. 
+- Consider these angles for trait questions (use only what is relevant, do not force all, come up with other angles if appropriate):
+  - How does the user make decisions?
+  - How does the user process or organize information?
+  - What pace or structure does the user prefer?
+  - What scale or intensity does the user prefer?
+  - Does the user prefer doing things alone or with others?
+  - How does the user prepare for new or unfamiliar tasks?
+  - What does the user avoid or struggle with?
+  - When does the user perform best?
+  - What motivates the user's choices?
+  - How does the user respond to pressure, complexity, or uncertainty?
+
+## CRITICAL trait question rules: 
+
+Trait questions must be completely TOPIC-AGNOSTIC. They must never reference the subject of the query. If someone removed the query and only read the trait questions, they should have NO IDEA what the original query was about.
+
+Test: could this exact trait question apply equally if the user had asked about things in other domains? If not, it is a direct question disguised as a trait question.
+- Trait questions must NEVER contain words related to the query's topic. Before outputting each trait question, mentally strip out any reference to the query's specific domain.
+  Query: "find me a gym"
+  BAD: "Does the user prefer working out alone or in a group setting?" → contains "working out"
+  GOOD: "Does the user prefer activities alone or with others?" → same question, no gym language. More LATENT
+
+  Query: "help me study for an exam"
+  BAD: "How does the user handle academic pressure and school deadlines?" → contains "academic"
+  GOOD: "How does the user handle deadlines and external stress?" → same question, no education language
+
+The trait question should retrieve the SAME user memory regardless of whether the original query was about gyms, restaurants, travel, or careers.
+
+BAD for "find me a restaurant":
+  "What kind of atmosphere does the user find most enjoyable when eating out?" → clearly about dining
+  "What does the user avoid when selecting a restaurant?" → literally says restaurant
+  "How does the user handle unexpected changes in plans when dining out?" → dining-specific
+
+GOOD for "find me a restaurant":
+  "How does the user respond to busy or crowded environments?" → applies to many domains
+  "How does the user make decisions when faced with many options?" → applies to many domains
+  "Does the user prefer doing things alone or with others?" → applies everywhere
+
+NEVER have domain specific language in a trait question -- NO EXCEPTIONS
+
+## Output Format
+Do not enter names into the questions. 
+
+Return JSON only:
+{{"trait": ["question 1", ..., "question {n_trait}"], "direct": ["question 1", ..., "question {n_direct}"]}}
