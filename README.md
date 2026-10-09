@@ -1,4 +1,4 @@
-
+<div align="center">
 
 # MemXD
 
@@ -16,6 +16,7 @@
 **[Citation](#citation)**
 
 
+</div>
 
 ## Overview
 
@@ -255,4 +256,3 @@ tiwari2026memxd,
   url={https://openreview.net/forum?id=UBrkXnQxEq}
 }
 ```
-
