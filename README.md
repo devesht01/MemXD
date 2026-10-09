@@ -1,13 +1,21 @@
+
+
 # MemXD
 
 ### Transferring Latent Behavioral Traits Across Domains for LLM Personalization
 
-[**Overview**](#overview) ·
-[**Setup**](#setup) ·
-[**Experiments**](#experiments) ·
-[**Repository Structure**](#repository-structure) ·
-[**Reproducibility Note**](#reproducibility-note) ·
-[**Detailed Experimental Configuration**](#detailed-experimental-configuration)
+[![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
+[![Paper](https://img.shields.io/badge/Paper-OpenReview-red.svg)](https://openreview.net/forum?id=UBrkXnQxEq)
+
+**[Overview](#overview)** ·
+**[Setup](#setup)** ·
+**[Experiments](#experiments)** ·
+**[Repository Structure](#repository-structure)** ·
+**[Reproducibility Note](#reproducibility-note)** ·
+**[Detailed Experimental Configuration](#detailed-experimental-configuration)**
+**[Citation](#citation)**
+
+
 
 ## Overview
 
@@ -19,17 +27,13 @@
 - **Dual-bank memory:** Factual memories and latent traits are stored and retrieved separately.
 - **Question-to-question retrieval:** Latent traits are retrieved by matching generated probing questions against stored question hooks, enabling transfer across semantically distant domains.
 
-
-
-<p align="center">
-  <img src="assets/overview.png" width="100%">
-</p>
+![](assets/overview.png)
 
 Figure 1: Overview of the **MemXD** pipeline. **(Top)** Storage: a user statement is classified by domain, stored as a factual entry, and if transferable, distilled into a latent trait paired with question hooks that are embedded in the latent bank. **(Bottom)** Retrieval: a query generates latent and factual probes, which search against hooks and statements respectively. Retrieved results are filtered, merged, and provided to the agent to give a personalized response.
 
-
-
 ## Setup
+
+
 
 ### 1. Create the Python environment
 
@@ -43,17 +47,22 @@ conda activate memxd
 pip install -r requirements.txt
 ```
 
+
+
 ### 2. Download the benchmark datasets
 
 MemXD is evaluated on:
 
-* **CrossMemBench**, using the Cross-domain Memory Recall Transfer (CMRT) task at noise level 100.
-* **PersonaMem**, cross-scenario generalization setting
+- **CrossMemBench**, using the Cross-domain Memory Recall Transfer (CMRT) task at noise level 100.
+- **PersonaMem**, cross-scenario generalization setting
 
 Download the datasets using our provided script:
+
 ```bash
 bash download_data.sh
 ```
+
+
 
 ### 3. API keys
 
@@ -63,23 +72,22 @@ Set your API key for OpenAI. This is used for both memory processing and evaluat
 export OPENAI_API_KEY="YOUR_API_KEY"
 ```
 
+
+
 ### 4. Ollama Setup
 
 If you would like to run the **Llama 3.2 3B** evaluation, please use Ollama.
 
 1. Install Ollama from the official website:
-
-   https://ollama.com/download
-
+  [https://ollama.com/download](https://ollama.com/download)
 2. Launch the Ollama application and keep it running.
-
 3. Pull the model used in our experiments:
 
 ```bash
 ollama pull llama3.2:3b
 ```
 
-4. Verify that the model is installed:
+1. Verify that the model is installed:
 
 ```bash
 ollama show llama3.2:3b
@@ -141,7 +149,6 @@ results/PersonaMem/
 
 The final accuracy for each model is printed to the terminal at the end of the run. The accuracy is also stored in the corresponding result JSON file.
 
-
 ## Repository Structure
 
 ```text
@@ -161,9 +168,11 @@ MemXD/
 ├── requirements.txt              Python dependencies
 ```
 
-## Reproducibility Note
-While all experiments are run with temperature 0, LLM outputs are not guaranteed to be fully deterministic. As a result, exact reproduction of the reported numbers is not guaranteed, though reproduced results should be comparable to those reported in the paper.
 
+
+## Reproducibility Note
+
+While all experiments are run with temperature 0, LLM outputs are not guaranteed to be fully deterministic. As a result, exact reproduction of the reported numbers is not guaranteed, though reproduced results should be comparable to those reported in the paper.
 
 ## Detailed Experimental Configuration
 
@@ -182,6 +191,8 @@ All agent responses are generated with:
 ```text
 temperature = 0
 ```
+
+
 
 #### MemXD retrieval configuration
 
@@ -214,7 +225,11 @@ Maximum question hooks per latent trait: 2
 Latent probes per query:  5
 Factual probes per query: 5
 ```
+
+
+
 #### Internal Models
+
 ```text
 Memory processing model: GPT-4o-mini
 Embedding model: text-embedding-3-small (OpenAI)
@@ -225,3 +240,19 @@ All internal MemXD calls for domain classification, latent trait extraction, and
 Hyperparameters were selected heuristically and held fixed across experiments; no benchmark-specific tuning was performed.
 
 Additional ablation experiments evaluating the contributions of question hooks, probing questions, and retrieval thresholds are reported in the paper.
+
+## Citation
+
+If you use MemXD in your research, please cite:
+
+```bibtex
+@inproceedings{
+tiwari2026memxd,
+  title={Mem{XD}: Transferring Latent Behavioral Traits Across Domains for {LLM} Personalization},
+  author={Devesh Tiwari},
+  booktitle={NeurIPS 2026 Workshop: Personalized, Aligned, Long-Term Memory for AI Systems},
+  year={2026},
+  url={https://openreview.net/forum?id=UBrkXnQxEq}
+}
+```
+
